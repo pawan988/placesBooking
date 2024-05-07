@@ -4,10 +4,7 @@ import Login from "./pages/auth/Login";
 import Layout from "./layout/Layout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Places from "./pages/places/Places";
-import { useState } from "react";
 function App() {
-  const [isOpen, setIsOpen] = useState(false);
-
   return (
     <>
       <BrowserRouter>
@@ -17,7 +14,7 @@ function App() {
             exact
             path="/dashboard"
             element={
-              <Layout setIsOpen={setIsOpen} isOpen={isOpen}>
+              <Layout>
                 <Dashboard />
               </Layout>
             }
@@ -26,7 +23,7 @@ function App() {
             exact
             path="/places"
             element={
-              <Layout setIsOpen={setIsOpen} isOpen={isOpen}>
+              <Layout>
                 <Places />
               </Layout>
             }

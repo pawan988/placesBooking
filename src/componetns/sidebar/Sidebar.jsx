@@ -1,13 +1,15 @@
 // import { useState, useRef, useEffect } from "react";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsArrowLeftCircle } from "react-icons/bs";
-import { motion } from "framer-motion";
+import { delay, motion } from "framer-motion";
 import { IoIosArrowBack } from "react-icons/io";
 import { RxAvatar } from "react-icons/rx";
 import { NavLink } from "react-router-dom";
 import { AiOutlineAppstore } from "react-icons/ai";
 import SubMneus from "./SubMenu";
+import { useMediaQuery } from "react-responsive";
+import { MdMenu } from "react-icons/md";
 
 // import "../../App.css";
 // import { Link, useLocation } from "react-router-dom";
@@ -149,38 +151,46 @@ import SubMneus from "./SubMenu";
 
 // export default Sidebar;
 
-// const Sidebar = ({ isOpen, setIsOpen }) => {
-//   const [open, setOpen] = useState(true);
-//   return (
-//     <div className="flex">
-//       <div
-//         className={`bg-blue-950 h-screen p-5 pt-8 ${
-//           isOpen
-//             ? "block fixed top-0 left-0 z-40 w-64 h-screen transition-transform"
-//             : "hidden"
-//         } lg:block ${open ? "w-72" : "w-20"} duration-300 relative`}
-//       >
-//         <BsArrowLeftCircle
-//           className="bg-[#ffffff] text-blue-950 text-3xl rounded-full absolute -right-3 top-9 border border-blue-950 cursor-pointer]"
-//           onClick={() => setOpen(!open)}
-//         />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Sidebar;
-
 const Sidebar = () => {
-  const sidebar_animation = {
-    open: {
-      width: "16rem",
-      transition: {
-        damping: 40,
-      },
-    },
-    closed: { width: "4rem", transition: { damping: 40 } },
-  };
+  let isTab = useMediaQuery({ query: "(max-width: 768px)" });
+  console.log("isTabisTab ===>>>", isTab);
+  // Sidebar Open State
+  const [isOpen, setIsOpen] = useState(isTab ? false : true);
+  const sidebar_animation = isTab
+    ? // Mobile View
+      {
+        open: {
+          x: 0,
+          width: "16rem",
+          transition: {
+            damping: 40,
+          },
+        },
+        closed: {
+          x: -250,
+          width: "0rwm",
+          transition: { damping: 40, delay: 0.15 },
+        },
+      }
+    : {
+        open: {
+          width: "16rem",
+          transition: {
+            damping: 40,
+          },
+        },
+        closed: { width: "4rem", transition: { damping: 40 } },
+      };
+
+  useEffect(() => {
+    if (isTab) {
+      //Mobile
+      setIsOpen(false);
+    } else {
+      //Laptop
+      setIsOpen(true);
+    }
+  }, [isTab]);
 
   const subMenusList = [
     {
@@ -193,9 +203,14 @@ const Sidebar = () => {
     },
   ];
 
-  const [isOpen, setIsOpen] = useState(true);
   return (
     <div>
+      <div
+        onClick={() => setIsOpen(false)}
+        className={`md:hidden fixed inset-0 max-h-screen z-[988] bg-black/50 ${
+          isOpen ? "block" : "hidden"
+        }`}
+      ></div>
       <motion.div
         variants={sidebar_animation}
         animate={isOpen ? "open" : "closed"}
@@ -213,42 +228,53 @@ const Sidebar = () => {
         {/* Menus */}
         <div className="flex flex-col h-full">
           {/* First */}
-          <ul className="whitespace-pre px-2.5 text-[0.9rem] py-5 flex flex-col gap-5 font-medium overflow-x-hidden scrollbar-thin">
+          <ul className="whitespace-pre px-2.5 text-[0.9rem] py-5 flex flex-col gap-5 font-medium overflow-x-hidden scrollbar-thin h-[70%] md:h-[68%]">
             <li>
               <NavLink to="" className="flex gap-3">
                 <AiOutlineAppstore size={23} />
-                All Apps
+                <p className={`whitespace-pre ${isOpen ? "block" : "hidden"}`}>
+                  All Apps
+                </p>
               </NavLink>
             </li>
             <li>
               <NavLink to="" className="flex gap-3">
                 <AiOutlineAppstore size={23} />
-                Authentication
+                <p className={`whitespace-pre ${isOpen ? "block" : "hidden"}`}>
+                  Authentication
+                </p>
               </NavLink>
             </li>
             <li>
               <NavLink to="" className="flex gap-3">
                 <AiOutlineAppstore size={23} />
-                Storage
+                <p className={`whitespace-pre ${isOpen ? "block" : "hidden"}`}>
+                  Storage
+                </p>
               </NavLink>
             </li>
             {/* Sunmenus */}
-            <div className="border-y py-5 border-slate-300">
-              <small className="pl-3 text-slate-300 inline-block mb-2">
-                Product Categories
-              </small>
-              {subMenusList?.map((items, index) => {
-                return (
-                  <div key={index} className="flex flex-col gap-1">
-                    <SubMneus data={items} />
-                  </div>
-                );
-              })}
-            </div>
+            {(isOpen || isTab) && (
+              <div className="border-y py-5 border-slate-300">
+                <small className="pl-3 text-slate-300 inline-block mb-2">
+                  Product Categories
+                </small>
+                {subMenusList?.map((items, index) => {
+                  return (
+                    <div key={index} className="flex flex-col gap-1">
+                      <SubMneus data={items} />
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
             <li>
               <NavLink to="" className="flex gap-3">
                 <AiOutlineAppstore size={23} />
-                Setting
+                <p className={`whitespace-pre ${isOpen ? "block" : "hidden"}`}>
+                  Setting
+                </p>
               </NavLink>
             </li>
           </ul>
@@ -260,7 +286,9 @@ const Sidebar = () => {
                   <p>Spark</p>
                   <small>No-cost $0/month</small>
                 </div>
-                <p>Upgrade</p>
+                <p className="text-teal-600 py-1.5 px-3 text-xs bg-teal-200 rounded-xl">
+                  Upgrade
+                </p>
               </div>
             </div>
           )}
@@ -281,6 +309,9 @@ const Sidebar = () => {
           <IoIosArrowBack size={25} />
         </motion.div>
       </motion.div>
+      <div className="m-3 md-hidden" onClick={() => setIsOpen(true)}>
+        <MdMenu size={25} />
+      </div>
     </div>
   );
 };

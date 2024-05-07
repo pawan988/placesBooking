@@ -3,15 +3,19 @@ import { getPlacesApi } from "../../services/apis/places";
 import { useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import CitiesCard from "./CitiesCard";
+import { MdKeyboardArrowRight } from "react-icons/md";
+import { MdKeyboardArrowLeft } from "react-icons/md";
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
   const [placesData, setPlacesData] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getPlacesApi();
+        const response = await getPlacesApi(currentPage);
         setPlacesData(response?.data?.results);
       } catch (error) {
         setError(error.response.data.detail);
@@ -19,10 +23,17 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [currentPage]);
 
   const handleNavigate = () => {
     navigate("/places");
+  };
+
+  const nextPage = () => {
+    setCurrentPage(currentPage + 1);
+  };
+  const prevPage = () => {
+    setCurrentPage(currentPage - 1);
   };
 
   return (
@@ -77,9 +88,22 @@ const Dashboard = () => {
       </div>
 
       <div className="flex justify-between px-3 items-center py-4">
-        <SearchBar />
-        <div className="border border-gray-400 px-4 py-1 bg-slate-300 rounded-md">
+        <SearchBar setPlacesData={setPlacesData} />
+        <div className="border border-gray-400 px-4 py-1 bg-slate-300 rounded-md flex justify-center items-center gap-2">
           <p className="text-lg">10 of {placesData?.total_cities}</p>
+
+          <button
+            onClick={prevPage}
+            disabled={currentPage <= 1}
+            className={`${
+              currentPage <= 1 ? "cursor-not-allowed" : "cursor-pointer"
+            }`}
+          >
+            <MdKeyboardArrowLeft size={23} />
+          </button>
+          <button onClick={nextPage}>
+            <MdKeyboardArrowRight size={23} />
+          </button>
         </div>
       </div>
 

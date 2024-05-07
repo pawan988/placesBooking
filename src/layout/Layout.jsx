@@ -16,14 +16,12 @@
 
 import React from "react";
 import Sidebar from "../componetns/sidebar/Sidebar";
-import Header from "../componetns/header/Header";
 
-const Layout = ({ children, noSidebar, setIsOpen, isOpen }) => {
+const Layout = ({ children, noSidebar }) => {
   return (
     <div className="flex">
-      {!noSidebar && <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />}
+      {!noSidebar && <Sidebar />}
       <div className={!noSidebar ? "p-4 sm:ml-5 w-full" : "w-full"}>
-        <Header isOpen={isOpen} setIsOpen={setIsOpen} />
         {children}
       </div>
     </div>
